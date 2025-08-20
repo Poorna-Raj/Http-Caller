@@ -60,6 +60,8 @@ python httpCaller.py POST https://jsonplaceholder.typicode.com/posts \
 python httpCaller.py GET https://api.example.com/data \
     --header "Authorization: Bearer <token>"
 ```
+## Screenshots
+![d1a1cda0-1d69-4c0b-872e-60afdefbf831](https://github.com/user-attachments/assets/8db02e72-8fed-414a-9a78-70f2ef0160a0)
 
 ## Notes
 
