@@ -44,7 +44,6 @@ def request(
         try:
             json_obj = response.json()
             json_text = json.dumps(json_obj, indent=2)
-            console.print(f"syntax{json_text}")
             syntax = Syntax(json_text,"json",theme="monokai",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
             response_content = Group(
                 Text(f"Status Code:{response.status_code}"),
