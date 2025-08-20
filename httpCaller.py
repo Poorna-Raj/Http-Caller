@@ -67,13 +67,13 @@ def getData(data):
     if data:
         return f"Data:{data}"
     else:
-        return "NULL"
+        return "Data: NULL"
 
 def getHeader(headers):
     if headers:
         return f"Header:{headers}"
     else:
-        return "NULL"
+        return "Header: NULL"
 
 if __name__ == "__main__":
     app()
