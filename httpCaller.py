@@ -37,31 +37,32 @@ def request(
         Text(getData(data)),
         Text(getHeader(headers))
     )
-    layout["request"].update(Panel(request_content,title="Request Data"))
+    request_panel = Panel(request_content,title="Request Data")
     try:
         response = requests.request(method=method.upper(),url=url,headers=headers,data=data)
 
         try:
             json_obj = response.json()
             json_text = json.dumps(json_obj, indent=2)
-            syntax = Syntax(json_text,"json",theme="monokai",line_numbers=True)
+            console.print(f"syntax{json_text}")
+            syntax = Syntax(json_text,"json",theme="monokai",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
             response_content = Group(
                 Text(f"Status Code:{response.status_code}"),
                 syntax
             )
-            layout["response"].update(Panel(response_content,title="Response Data"))
-        except Exception:
+        except Exception as e:
             response_content = Group(
                 Text(f"Status Code:{response.status_code}"),
-                Text(f"Resonse Message:{response.text}")
+                Text(f"Response Message:{response.text}"),
+                Text(f"{e}")
             )
-            layout["response"].update(Panel(response_content,title="Response Data"))
     except Exception as e:
         response_content = Group(
             Text(f"Exception:{e}")
         )
-        layout["response"].update(Panel(response_content,title="Response Data"))
-    console.print(Panel(layout, title="HttpCaller"))
+    response_panel = Panel(response_content,title="Response Data")
+
+    console.print(Panel(Group(request_panel, response_panel), title="HttpCaller"))
 
 def getData(data):
     if data:
