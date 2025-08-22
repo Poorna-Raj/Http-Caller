@@ -48,7 +48,8 @@ def request(
             syntax = Syntax(json_text,"json",theme="rrt",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
             response_content = Group(
                 get_status_code(response.status_code),
-                syntax
+                get_response_body() if syntax else "",
+                syntax if syntax else ""
             )
         except Exception as e:
             response_content = Group(
@@ -105,6 +106,10 @@ def get_method(method:str):
         method_text_obj.append("Undefined",style="bold red")
     return method_text_obj
     
+def get_response_body():
+    response_body_obj = Text()
+    response_body_obj.append("Response Body: ",style="bold white")
+    return response_body_obj
 
 
 def getData(data):
