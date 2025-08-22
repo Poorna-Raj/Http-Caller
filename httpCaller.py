@@ -31,11 +31,12 @@ def request(
         get_method(method),
         get_url_header(url)
     ]
+    json_payload_header = None
     if header:
         try:
-            key,value = header.split(":")
-            headers[key.strip()] = value.strip()
-            request_items.append(getHeader(headers))
+            json_payload_header = json.loads(header)
+            request_items.append(get_header_header())
+            request_items.append(get_header_body(json_payload_header))
         except ValueError:
             console.print("[red]Invalid Headers! Use key:value format.[/red]")
             raise typer.Exit()
@@ -52,7 +53,7 @@ def request(
     request_content = Group(*request_items)
     request_panel = Panel(request_content,title="Request Data")
     try:
-        response = requests.request(method=method.upper(),url=url,headers=headers,json=json_payload)
+        response = requests.request(method=method.upper(),url=url,headers=json_payload_header,json=json_payload)
 
         try:
             json_obj = response.json()
@@ -150,11 +151,13 @@ def get_url_header(url:str):
         response_data_obj.append(f"{url}",style="bold yellow underline")
     return response_data_obj
 
-def getHeader(headers):
-    if headers:
-        return f"Header:{headers}"
-    else:
-        return "Header: NULL"
+def get_header_body(json_payload_header):
+    json_text = json.dumps(json_payload_header, indent=2)
+    syntax = Syntax(json_text,"json",theme="rrt",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
+    return syntax
+
+def get_header_header():
+    return Text("Headers: ",style="bold white")
 
 if __name__ == "__main__":
     app()
