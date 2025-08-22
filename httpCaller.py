@@ -47,7 +47,7 @@ def request(
     )
     request_panel = Panel(request_content,title="Request Data")
     try:
-        response = requests.request(method=method.upper(),url=url,headers=headers,data=json_payload)
+        response = requests.request(method=method.upper(),url=url,headers=headers,json=json_payload)
 
         try:
             json_obj = response.json()
