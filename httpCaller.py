@@ -6,6 +6,7 @@ from rich.syntax import Syntax
 from rich.panel import Panel
 from rich.layout import Layout
 from rich.text import Text
+from rich.console import RenderableType
 
 app = typer.Typer()
 console = Console()
@@ -26,25 +27,29 @@ def request(
 
     headers = {}
     json_payload = None
+    request_items: list[RenderableType] = [
+        get_method(method),
+        get_url_header(url)
+    ]
     if header:
         try:
             key,value = header.split(":")
             headers[key.strip()] = value.strip()
+            request_items.append(getHeader(headers))
         except ValueError:
             console.print("[red]Invalid Headers! Use key:value format.[/red]")
             raise typer.Exit()
-    try:
-        json_payload = json.loads(data) if data else None
-    except json.JSONDecodeError:
+    if data:
+        try:
+            json_payload = json.loads(data)
+            request_items.append(get_data_body())
+            request_items.append(get_data_obj(data))
+        except json.JSONDecodeError:
+            console.print("[red]Invalid JSON Input![/red]")
+            json_payload = None
+    else:
         json_payload = None
-    request_content = Group(
-        get_method(method),
-        getUrlHeader(url),
-        getDataBody() if data else Text(""),
-        getDataObj(data),
-        Text(getHeader(headers))
-        # TODO:FIX -> when data isn't available it prints a empty spaces
-    )
+    request_content = Group(*request_items)
     request_panel = Panel(request_content,title="Request Data")
     try:
         response = requests.request(method=method.upper(),url=url,headers=headers,json=json_payload)
@@ -121,12 +126,12 @@ def get_response_body():
     return response_body_obj
 
 
-def getDataBody():
+def get_data_body():
     request_data_obj = Text()
     request_data_obj.append("Request Body: ",style="bold white")
     return request_data_obj
 
-def getDataObj(data:str):
+def get_data_obj(data:str):
     if not data:
         return Text("")
     try:
@@ -138,7 +143,7 @@ def getDataObj(data:str):
         console.print("Invalid JSON Input!",style="bold red")
         return Text("")
 
-def getUrlHeader(url:str):
+def get_url_header(url:str):
     response_data_obj = Text()
     response_data_obj.append("URL: ",style="bold white")
     if url:
