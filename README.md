@@ -63,7 +63,14 @@ python httpCaller.py GET https://api.example.com/data \
 
 ## Screenshots
 
-![Screenshot of Post Request](assets/25-08-22.png)
+1. GET Request
+   ![Screenshot of GET Request](assets/25-08-22-GET.png)
+2. POST Request
+   ![Screenshot of POST Request](assets/25-08-22-POST.png)
+3. PUT Request
+   ![Screenshot of PUT Request](assets/25-08-22-PUT.png)
+4. DELETE Request
+   ![Screenshot of DELETE Request](assets/25-08-22-DELETE.png)
 
 ## Notes
 
