@@ -39,7 +39,7 @@ def request(
         json_payload = None
     request_content = Group(
         get_method(method),
-        Text(f"URL:{url}"),
+        getUrlHeader(url),
         getDataBody() if data else Text(""),
         getDataObj(data),
         Text(getHeader(headers))
@@ -137,6 +137,13 @@ def getDataObj(data:str):
     except Exception:
         console.print("Invalid JSON Input!",style="bold red")
         return Text("")
+
+def getUrlHeader(url:str):
+    response_data_obj = Text()
+    response_data_obj.append("URL: ",style="bold white")
+    if url:
+        response_data_obj.append(f"{url}",style="bold yellow underline")
+    return response_data_obj
 
 def getHeader(headers):
     if headers:
