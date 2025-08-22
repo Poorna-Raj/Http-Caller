@@ -16,6 +16,7 @@ layout.split_column(
     Layout(name="request"),
     Layout(name="response")
 )
+
 @app.command()
 def request(
     method:str,
@@ -32,7 +33,7 @@ def request(
             console.print("[red]Invalid Headers! Use key:value format.[/red]")
             raise typer.Exit()
     request_content = Group(
-        Text(f"Method:{method}"),
+        get_method(method),
         Text(f"URL:{url}"),
         Text(getData(data)),
         Text(getHeader(headers))
@@ -44,24 +45,67 @@ def request(
         try:
             json_obj = response.json()
             json_text = json.dumps(json_obj, indent=2)
-            syntax = Syntax(json_text,"json",theme="monokai",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
+            syntax = Syntax(json_text,"json",theme="rrt",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
             response_content = Group(
-                Text(f"Status Code:{response.status_code}"),
+                get_status_code(response.status_code),
                 syntax
             )
         except Exception as e:
             response_content = Group(
-                Text(f"Status Code:{response.status_code}"),
-                Text(f"Response Message:{response.text}"),
+                get_status_code(response.status_code),
                 Text(f"{e}")
             )
     except Exception as e:
         response_content = Group(
+            get_status_code(response.status_code),
             Text(f"Exception:{e}")
         )
+    
     response_panel = Panel(response_content,title="Response Data")
 
     console.print(Panel(Group(request_panel, response_panel), title="HttpCaller"))
+
+def get_status_code(code:int):
+    status_text = Text()
+    code_color = "white"
+    status_text.append("Status Code : ",style="bold white")
+    if(code <= 199):
+        code_color = "bold blue"
+    elif(code <= 299):
+        code_color = "bold green"
+    elif(code <= 399):
+        code_color = "bold purple"
+    elif(code <= 499):
+        code_color = "bold yellow"
+    elif(code <= 599):
+        code_color = "bold red"
+    else:
+        code_color = "bold white"
+    status_text.append(str(code),style=code_color)
+    return status_text
+
+def get_method(method:str):
+    method_text_obj = Text()
+    if(method):
+        method_color = "white"
+        method_text_obj.append("Method : ",style="bold white")
+        match method:
+            case "get":
+                method_color = "bold green"
+            case "post":
+                method_color = "bold yellow"
+            case "put":
+                method_color = "bold orange"
+            case "patch":
+                method_color = "bold orange"
+            case "delete":
+                method_color = "bold purple"
+        method_text_obj.append(f"{method.upper()}",style=f"{method_color}")
+    else:
+        method_text_obj.append("Undefined",style="bold red")
+    return method_text_obj
+    
+
 
 def getData(data):
     if data:
