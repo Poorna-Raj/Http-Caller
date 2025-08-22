@@ -25,6 +25,7 @@ def request(
     header:str = typer.Option(None,"--header","-H",help="Key:Value headers"),):
 
     headers = {}
+    json_payload = None
     if header:
         try:
             key,value = header.split(":")
@@ -32,15 +33,20 @@ def request(
         except ValueError:
             console.print("[red]Invalid Headers! Use key:value format.[/red]")
             raise typer.Exit()
+    try:
+        json_payload = json.loads(data) if data else None
+    except json.JSONDecodeError:
+        json_payload = None
     request_content = Group(
         get_method(method),
         Text(f"URL:{url}"),
-        Text(getData(data)),
+        getDataBody() if data else Text(""),
+        getDataObj(data),
         Text(getHeader(headers))
     )
     request_panel = Panel(request_content,title="Request Data")
     try:
-        response = requests.request(method=method.upper(),url=url,headers=headers,data=data)
+        response = requests.request(method=method.upper(),url=url,headers=headers,data=json_payload)
 
         try:
             json_obj = response.json()
@@ -48,13 +54,14 @@ def request(
             syntax = Syntax(json_text,"json",theme="rrt",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
             response_content = Group(
                 get_status_code(response.status_code),
-                get_response_body() if syntax else "",
-                syntax if syntax else ""
+                get_response_body() if syntax else Text(""),
+                syntax
             )
-        except Exception as e:
+        except json.JSONDecodeError:
             response_content = Group(
                 get_status_code(response.status_code),
-                Text(f"{e}")
+                get_response_body(),
+                Text(response.text)
             )
     except Exception as e:
         response_content = Group(
@@ -112,11 +119,22 @@ def get_response_body():
     return response_body_obj
 
 
-def getData(data):
-    if data:
-        return f"Data:{data}"
-    else:
-        return "Data: NULL"
+def getDataBody():
+    request_data_obj = Text()
+    request_data_obj.append("Request Body: ",style="bold white")
+    return request_data_obj
+
+def getDataObj(data:str):
+    if not data:
+        return Text("")
+    try:
+        json_obj = json.loads(data)
+        json_text = json.dumps(json_obj,indent=2)
+        syntax = Syntax(json_text,"json",theme="rrt",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
+        return syntax
+    except Exception:
+        console.print("Invalid JSON Input!",style="bold red")
+        return Text("")
 
 def getHeader(headers):
     if headers:
