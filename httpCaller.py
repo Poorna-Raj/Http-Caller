@@ -43,6 +43,7 @@ def request(
         getDataBody() if data else Text(""),
         getDataObj(data),
         Text(getHeader(headers))
+        # TODO:FIX -> when data isn't available it prints a empty spaces
     )
     request_panel = Panel(request_content,title="Request Data")
     try:
@@ -51,6 +52,7 @@ def request(
         try:
             json_obj = response.json()
             json_text = json.dumps(json_obj, indent=2)
+            # TODO: FIX -> Cannot handle when response is HTML
             syntax = Syntax(json_text,"json",theme="rrt",line_numbers=True,word_wrap=False,indent_guides=True,code_width=console.width-10)
             response_content = Group(
                 get_status_code(response.status_code),
