@@ -36,7 +36,7 @@ pip install -r requirements.txt
 Run the tool from the terminal:
 
 ```bash
-python httpCaller.py METHOD URL [--data '{"key":"value"}'] [--header "Key:Value"]
+python httpCaller.py METHOD URL [--d '{"key":"value"}'] [--H '{"Key":"Value"}']
 ```
 
 ### Examples
@@ -51,26 +51,26 @@ python httpCaller.py GET https://jsonplaceholder.typicode.com/posts/1
 
 ```bash
 python httpCaller.py POST https://jsonplaceholder.typicode.com/posts \
-    --data '{"title": "Hello", "body": "World"}'
+    --d '{"title": "Hello", "body": "World"}'
 ```
 
 - GET request with headers:
 
 ```bash
 python httpCaller.py GET https://api.example.com/data \
-    --header "Authorization: Bearer <token>"
+    --H "Authorization: Bearer <token>"
 ```
 
 ## Screenshots
 
 1. GET Request
-   ![Screenshot of GET Request](assets/25-08-22-GET.png)
+   ![Screenshot of GET Request](assets/25-08-23-GET.png)
 2. POST Request
-   ![Screenshot of POST Request](assets/25-08-22-POST.png)
+   ![Screenshot of POST Request](assets/25-08-23-POST.png)
 3. PUT Request
-   ![Screenshot of PUT Request](assets/25-08-22-PUT.png)
+   ![Screenshot of PUT Request](assets/25-08-23-PUT.png)
 4. DELETE Request
-   ![Screenshot of DELETE Request](assets/25-08-22-DELETE.png)
+   ![Screenshot of DELETE Request](assets/25-08-23-DELETE.png)
 
 ## Notes
 
