@@ -7,6 +7,8 @@ from rich.panel import Panel
 from rich.layout import Layout
 from rich.text import Text
 from rich.console import RenderableType
+from rich.align import Align
+from rich.columns import Columns
 
 app = typer.Typer()
 console = Console()
@@ -14,12 +16,12 @@ console = Console()
 layout = Layout()
 
 layout.split_column(
-    Layout(name="header"),
-    Layout(name="body")
+    Layout(name="header",size=3),
+    Layout(name="body",ratio=1)
 )
 layout["body"].split_row(
-    Layout(name="request"),
-    Layout(name="response")
+    Layout(name="request",ratio=1),
+    Layout(name="response",ratio=2)
 )
 
 @app.command()
@@ -31,7 +33,7 @@ def request(
 
     json_payload = None
     request_items: list[RenderableType] = []
-    header_content = Group(get_method(method),get_url_header(url))
+    header_content = Columns([get_method(method), get_url_header(url)])
     json_payload_header = None
     if header:
         try:
@@ -52,7 +54,7 @@ def request(
     else:
         json_payload = None
     request_content = Group(*request_items)
-    request_panel = Panel(request_content,title="Request Data")
+    request_panel = Panel(request_content,title="Request Data",border_style="green",expand=True)
     try:
         response = requests.request(method=method.upper(),url=url,headers=json_payload_header,json=json_payload)
 
@@ -77,12 +79,12 @@ def request(
             Text(f"Exception:{e}")
         )
     
-    response_panel = Panel(response_content,title="Response Data")
-    header_panel = Panel(header_content,title="Header Content")
+    response_panel = Panel(response_content,title="Response Data",border_style="blue",expand=True)
+    header_panel = Panel(header_content,title="Header Content",border_style="cyan",expand=True)
 
     # console.print(Panel(Group(request_panel, response_panel), title="HttpCaller"))
-    layout["response"].update(response_panel)
     layout["request"].update(request_panel)
+    layout["response"].update(response_panel)
     layout["header"].update(header_panel)
     console.print(layout)
 
@@ -97,7 +99,7 @@ def get_status_code(code:int):
     elif(code <= 399):
         code_color = "bold purple"
     elif(code <= 499):
-        code_color = "bold yellow"
+        code_color = "bold yellow1"
     elif(code <= 599):
         code_color = "bold red"
     else:
@@ -114,13 +116,13 @@ def get_method(method:str):
             case "get":
                 method_color = "bold green"
             case "post":
-                method_color = "bold yellow"
+                method_color = "bold yellow1"
             case "put":
-                method_color = "bold orange"
+                method_color = "bold orange3"
             case "patch":
-                method_color = "bold orange"
+                method_color = "bold orange3"
             case "delete":
-                method_color = "bold purple"
+                method_color = "bold magenta"
         method_text_obj.append(f"{method.upper()}",style=f"{method_color}")
     else:
         method_text_obj.append("Undefined",style="bold red")
