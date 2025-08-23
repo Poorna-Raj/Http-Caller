@@ -14,6 +14,10 @@ console = Console()
 layout = Layout()
 
 layout.split_column(
+    Layout(name="header"),
+    Layout(name="body")
+)
+layout["body"].split_row(
     Layout(name="request"),
     Layout(name="response")
 )
@@ -25,12 +29,9 @@ def request(
     data:str = typer.Option(None,"--data","-d",help="JSON Body"),
     header:str = typer.Option(None,"--header","-H",help="Key:Value headers"),):
 
-    headers = {}
     json_payload = None
-    request_items: list[RenderableType] = [
-        get_method(method),
-        get_url_header(url)
-    ]
+    request_items: list[RenderableType] = []
+    header_content = Group(get_method(method),get_url_header(url))
     json_payload_header = None
     if header:
         try:
@@ -77,8 +78,13 @@ def request(
         )
     
     response_panel = Panel(response_content,title="Response Data")
+    header_panel = Panel(header_content,title="Header Content")
 
-    console.print(Panel(Group(request_panel, response_panel), title="HttpCaller"))
+    # console.print(Panel(Group(request_panel, response_panel), title="HttpCaller"))
+    layout["response"].update(response_panel)
+    layout["request"].update(request_panel)
+    layout["header"].update(header_panel)
+    console.print(layout)
 
 def get_status_code(code:int):
     status_text = Text()
@@ -124,7 +130,6 @@ def get_response_body():
     response_body_obj = Text()
     response_body_obj.append("Response Body: ",style="bold white")
     return response_body_obj
-
 
 def get_data_body():
     request_data_obj = Text()
